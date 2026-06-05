@@ -15,7 +15,7 @@ on:
 jobs:
   build-and-release:
     name: Build and Release Flatpak
-    runs-on: self-hosted
+    runs-on: ubuntu-24.04-arm
     permissions:
       contents: write
     timeout-minutes: 1440
@@ -34,6 +34,12 @@ jobs:
           submodules: false
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL /usr/local/.ghcup || true
+          sudo docker system prune -af || true
+          df -h
 
       - name: Check runner disk space
         env:
@@ -171,7 +177,7 @@ jobs:
 
       - name: Install dependencies and Flatpak SDK
         run: |
-          bash .github/scripts/ci-retry.sh sudo dnf install -y flatpak flatpak-builder python3-pip
+          sudo apt-get update -y && bash .github/scripts/ci-retry.sh sudo apt-get install -y flatpak flatpak-builder python3-pip
           bash .github/scripts/ci-retry.sh pip3 install --user poetry
           echo "$HOME/.local/bin" >> $GITHUB_PATH
           bash .github/scripts/ci-retry.sh flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
