@@ -34,6 +34,7 @@ docker buildx inspect --bootstrap
 DEBUG="${DEBUG-}" LTO="${LTO-}" JOBS="$jobs" poetry run gen_dockerfile > "$dockerfile_path"
 perl -0pi -e 's{\bgit clone\b}{git-retry clone}g; s{\bgit fetch\b}{git-retry fetch}g; s{curl -sSL}{curl --retry 5 --retry-delay 10 --connect-timeout 30 -fL -sS}g' "$dockerfile_path"
 perl -0pi -e 's{git submodule update --init --recursive --depth=1([^\\\n]*) \\}{(git submodule sync --recursive; for attempt in 1 2 3; do git -c submodule.fetchJobs=1 submodule update --init --recursive --depth=1$1 && exit 0; sleep \$((attempt * 20)); done; git -c submodule.fetchJobs=1 submodule update --init --recursive$1) \\}g' "$dockerfile_path"
+perl -0pi -e 's{&& cd rnnoise}{&& cd rnnoise && sed -i /os_support.h/d src/vec_neon.h}g' "$dockerfile_path"
 cat > "$git_retry_snippet_path" <<'EOF'
 RUN cat <<'SCRIPT' > /usr/local/bin/git-retry && chmod +x /usr/local/bin/git-retry
 #!/usr/bin/env bash
