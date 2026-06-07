@@ -37,7 +37,7 @@ jobs:
 
       - name: Free disk space
         run: |
-          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache/CodeQL /usr/local/.ghcup || true
+                    sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android /opt/hostedtoolcache /usr/local/.ghcup /usr/lib/jvm /usr/share/swift /usr/local/share/powershell /usr/local/lib/node_modules || true; sudo swapoff -a || true; sudo rm -f /swapfile /mnt/swapfile || true; sudo apt-get clean || true
           sudo docker system prune -af || true
           df -h
 
@@ -268,7 +268,7 @@ jobs:
             -e TDESKTOP_API_HASH \
             -v "$PWD:/usr/src/tdesktop" \
             -v "$PWD/.ccache:/ccache" \
-            ghcr.io/telegramdesktop/tdesktop/centos_env:latest \
+                        tdesktop:centos_env \
             /bin/bash /usr/src/tdesktop/.github/scripts/build-tdesktop-binary.sh
 
       - name: Prepare Flatpak build directory
